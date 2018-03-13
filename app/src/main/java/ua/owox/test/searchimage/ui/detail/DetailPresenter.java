@@ -1,5 +1,6 @@
 package ua.owox.test.searchimage.ui.detail;
 
+import com.orhanobut.logger.Logger;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
@@ -19,11 +20,4 @@ public class DetailPresenter<V extends DetailContract.View> extends BasePresente
         super(repository, compositeDisposable);
     }
 
-    @Override
-    public void shareImage(String url) {
-        compositeDisposable.add(Observable.fromCallable(() ->
-                Picasso.get().load(url).get()).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bitmap -> view.onBitmapLoaded(bitmap)));
-    }
 }

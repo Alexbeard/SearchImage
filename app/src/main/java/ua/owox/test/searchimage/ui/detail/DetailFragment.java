@@ -1,7 +1,9 @@
 package ua.owox.test.searchimage.ui.detail;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +11,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.orhanobut.logger.Logger;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import ua.owox.test.searchimage.R;
 import ua.owox.test.searchimage.databinding.FragmentDetailBinding;
@@ -64,15 +68,29 @@ public class DetailFragment extends BaseFragment<FragmentDetailBinding, DetailPr
     }
 
     private void shareImage() {
-        presenter.shareImage(image.getUrls().getRegular());
-    }
 
-    @Override
-    public void onBitmapLoaded(Bitmap bitmap) {
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("image/*");
-        i.putExtra(Intent.EXTRA_STREAM, BitmapUtil.getLocalBitmapUri(getContext(), bitmap));
-        startActivity(Intent.createChooser(i, "Share Image"));
+        Picasso.get().load(image.getUrls().getRegular()).into(new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                try {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("image/*");
+                    i.putExtra(Intent.EXTRA_STREAM, BitmapUtil.getLocalBitmapUri(getContext(), bitmap));
+                    startActivity(Intent.createChooser(i, "Share Image"));
+                } catch (ActivityNotFoundException ex) {
+                    Logger.d("Not found Activity for share: " + ex.getMessage());
+                }
+            }
+
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
+        });
+
     }
 
     private void downloadImage() {

@@ -66,8 +66,8 @@ public abstract class BaseFragment<B extends ViewDataBinding, P extends BasePres
     protected abstract int getLayoutId();
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStop() {
+        super.onStop();
         if (presenter != null)
             presenter.unbindView();
     }
